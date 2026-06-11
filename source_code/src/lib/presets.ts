@@ -15,7 +15,7 @@ export const PRESETS: { section: string; items: Preset[] }[] = [
       {
         id: "preset-2m-1",
         type: "2m-1",
-        label: "2M · 2 gang with charging",
+        label: "2M · 2 gang with charging (gap)",
         qty: 1,
         slots: ["fan", null],
       },

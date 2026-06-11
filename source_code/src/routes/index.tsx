@@ -112,15 +112,8 @@ function MasterSlot({
     ? (isOn ? "backlit-blue-active" : "backlit-blue")
     : undefined;
 
-  // Icon filter: bright neon blue drop-shadow for all switches
-  const iconFilter = (iconId || overlay)
-    ? (isOn
-      ? "drop-shadow(0 0 6px #3b8eff) drop-shadow(0 0 2px #fff)"
-      : "drop-shadow(0 0 3px #1d68e8)")
-    : undefined;
-
-  const iconColor = (iconId || overlay)
-    ? (isOn ? "#ffffff" : "#7ab8ff")
+  const iconClass = (iconId || overlay)
+    ? (isOn ? "slot-icon-active" : "slot-icon-standby")
     : undefined;
 
   return (
@@ -131,16 +124,21 @@ function MasterSlot({
         onClick={(e) => {
           if (iconId || overlay) { e.stopPropagation(); setIsOn(!isOn); }
         }}
-        style={{ width: size, height: size, borderRadius: 6 * scale }}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: 6 * scale,
+          borderColor: (!iconId && !overlay && !isOver) ? 'var(--slot-border)' : undefined
+        }}
         className={cn(
           "flex items-center justify-center border transition-all duration-300 shrink-0",
           !iconId && !overlay && (isOver
             ? "border-2 border-destructive bg-destructive/5"
-            : "border-dashed border-border/70"),
+            : "border-dashed"),
           glowClass,
         )}
       >
-        <div className="pointer-events-none flex items-center justify-center w-full h-full" style={{ color: iconColor }}>
+        <div className="pointer-events-none flex items-center justify-center w-full h-full">
           {Icon ? (
             iconId === "power" ? (
               overlay === "power-droplet" ? (
@@ -149,7 +147,7 @@ function MasterSlot({
                 <PowerSlotIcon scale={scale} size={size} isOn={isOn} blue={true} />
               )
             ) : (
-              <Icon size={size * 0.45} strokeWidth={1.5} style={{ filter: iconFilter }} />
+              <Icon size={size * 0.45} strokeWidth={1.5} className={iconClass} />
             )
           ) : overlay ? (
             <SlotOverlay overlay={overlay} size={size} isOn={isOn} blue={true} />
@@ -176,8 +174,8 @@ function MasterSlot({
 
 /* -------------------- catalog card (read-only) -------------------- */
 
-function CatalogCard({ preset, onPick }: { preset: Preset; onPick: () => void }) {
-  const cfg = { id: preset.id, type: preset.type, slots: preset.slots };
+function CatalogCard({ preset, onPick, catalogColor }: { preset: Preset; onPick: () => void; catalogColor: string }) {
+  const cfg = { id: preset.id, type: preset.type, slots: preset.slots, color: catalogColor };
   return (
     <button
       onClick={onPick}
@@ -198,9 +196,9 @@ function CatalogCard({ preset, onPick }: { preset: Preset; onPick: () => void })
           </p>
           <p className="text-[10px] font-semibold text-muted-foreground mt-0.5">{preset.qty} pcs in package</p>
         </div>
-        <div className="bg-[#034B25] text-white text-[10px] font-bold py-1.5 px-3 rounded-md w-full transition group-hover:bg-[#056332] active:scale-98 text-center">
+        {/* <div className="bg-[#034B25] text-white text-[10px] font-bold py-1.5 px-3 rounded-md w-full transition group-hover:bg-[#056332] active:scale-98 text-center">
           Configure Switch
-        </div>
+        </div> */}
       </div>
     </button>
   );
@@ -371,21 +369,21 @@ function Kiosk() {
 
   function changeSeries(seriesId: string) {
     setSelectedSeries(seriesId);
-    
+
     // Automatically select the first frame of the series when switching
     const isArch = seriesId === "elite" || seriesId === "pro" || seriesId === "pro-plus";
     const defaultType = isArch ? "arch-2m-2switch" : "2m-1";
     setMasterType(defaultType);
-    
+
     if (seriesId !== "classic") {
       setActiveTab("frames");
     }
-    
+
     const cfg = emptyConfig(defaultType, seriesId);
     const allowed = SERIES_COLORS[seriesId] || ["black"];
     cfg.color = allowed.includes(master.color || "black") ? master.color : allowed[0];
     setMaster(cfg);
-    
+
     setEditingCartId(null);
     toast.success(`Switched to ${SERIES_LABELS[seriesId]}`);
   }
@@ -398,9 +396,6 @@ function Kiosk() {
     setMaster(cfg);
     setEditingCartId(null);
     toast.info("Frame loaded — drag icons to configure");
-    setTimeout(() => {
-      sidebarRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 80);
   }
 
   function loadFromCart(it: { id: string; config: typeof master; qty: number }) {
@@ -410,9 +405,6 @@ function Kiosk() {
     setQty(it.qty);
     setEditingCartId(it.id);
     toast.info("Loaded from cart — edit and save");
-    setTimeout(() => {
-      sidebarRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 80);
   }
 
   function loadPreset(p: Preset) {
@@ -424,9 +416,6 @@ function Kiosk() {
     setMaster(cfg);
     setQty(p.qty);
     toast.success("Preset loaded — tap a slot to clear it");
-    setTimeout(() => {
-      sidebarRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 80);
   }
 
   function onDragStart(e: DragStartEvent) {
@@ -699,18 +688,22 @@ function Kiosk() {
               {(selectedSeries === "classic" && activeTab === "presets") ? (
                 // Original Presets
                 <div className="space-y-10">
-                  {PRESETS.map((section) => (
-                    <section key={section.section} className="space-y-4">
-                      <div className="flex items-baseline gap-6 border-b border-border/60 pb-1">
-                        <h3 className="text-2xl font-black">{section.section}</h3>
-                      </div>
-                      <div className="grid grid-cols-2 gap-x-2 gap-y-4 sm:grid-cols-3 xl:grid-cols-4">
-                        {section.items.map((p) => (
-                          <CatalogCard key={p.id} preset={p} onPick={() => loadPreset(p)} />
-                        ))}
-                      </div>
-                    </section>
-                  ))}
+                  {PRESETS.map((section) => {
+                    const allowedColors = SERIES_COLORS[selectedSeries] || ["black"];
+                    const catalogColor = allowedColors[0];
+                    return (
+                      <section key={section.section} className="space-y-4">
+                        <div className="flex items-baseline gap-6 border-b border-border/60 pb-1">
+                          <h3 className="text-2xl font-black">{section.section}</h3>
+                        </div>
+                        <div className="grid grid-cols-2 gap-x-2 gap-y-4 sm:grid-cols-3 xl:grid-cols-4">
+                          {section.items.map((p) => (
+                            <CatalogCard key={p.id} preset={p} onPick={() => loadPreset(p)} catalogColor={catalogColor} />
+                          ))}
+                        </div>
+                      </section>
+                    );
+                  })}
                 </div>
               ) : (
                 // Unique Frames Catalog
@@ -725,7 +718,8 @@ function Kiosk() {
 
                     const renderPanelCard = (p: typeof categoryPanels[0]) => {
                       const allowedColors = SERIES_COLORS[selectedSeries] || ["black"];
-                      const catalogColor = allowedColors.includes(master.color || "black") ? master.color : allowedColors[0];
+                      // const catalogColor = allowedColors.includes(master.color || "black") ? master.color : allowedColors[0];
+                      const catalogColor = allowedColors[0];
                       const config = {
                         ...emptyConfig(p.id, selectedSeries),
                         color: catalogColor,
@@ -736,10 +730,10 @@ function Kiosk() {
                           key={p.id}
                           onClick={() => changeType(p.id)}
                           className={cn(
-                            "group flex flex-col items-center gap-3 p-4 rounded-xl border transition text-left relative lighting-hover-effect",
+                            "group flex flex-col items-center justify-between gap-3 p-4 rounded-xl border transition text-left relative lighting-hover-effect w-full h-full shadow-sm",
                             isSelected
                               ? "border-amber-500 bg-amber-500/5 ring-1 ring-amber-500/30"
-                              : "border-border bg-card/50 hover:bg-secondary/40 hover:border-border-strong",
+                              : "border-border bg-background hover:bg-card/50",
                           )}
                         >
                           {/* Selected indicator badge */}
@@ -750,21 +744,23 @@ function Kiosk() {
                             </span>
                           )}
 
-                          <div className="flex items-center justify-center p-2 bg-background rounded-lg border border-border shadow-inner min-h-[160px] w-full lighting-preview-box">
+                          <div className="flex items-center justify-center p-2 bg-secondary/10 rounded-lg border border-border shadow-inner min-h-[140px] w-full lighting-preview-box">
                             {(() => {
                               const panelDef = PANELS[p.id];
-                              const scale = panelDef ? Math.min(180 / panelDef.frame.w, 120 / panelDef.frame.h) : 0.35;
+                              const scale = panelDef ? Math.min(150 / panelDef.frame.w, 100 / panelDef.frame.h) : 0.42;
                               return <PanelFrame config={config} series={selectedSeries} scale={scale} />;
                             })()}
                           </div>
 
-                          <div className="w-full text-center sm:text-left">
-                            <h4 className="text-xs font-bold text-foreground line-clamp-1">
-                              {p.label}
-                            </h4>
-                            <p className="text-[10px] text-muted-foreground mt-0.5">
-                              {p.items.filter((i) => i.type === "slot").length} configurable slots
-                            </p>
+                          <div className="space-y-3 text-center w-full mt-1">
+                            <div>
+                              <p className="max-w-[180px] text-xs font-bold leading-tight text-foreground mx-auto line-clamp-2">
+                                {p.label}
+                              </p>
+                              <p className="text-[10px] font-semibold text-muted-foreground mt-0.5">
+                                {p.items.filter((i) => i.type === "slot").length} configurable slots
+                              </p>
+                            </div>
                           </div>
                         </button>
                       );
@@ -781,7 +777,7 @@ function Kiosk() {
                           </span>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 xl:grid-cols-4">
+                        <div className="grid grid-cols-2 gap-x-2 gap-y-4 sm:grid-cols-3 xl:grid-cols-4">
                           {standardPanels.map(renderPanelCard)}
                         </div>
 
@@ -790,7 +786,7 @@ function Kiosk() {
                             <h4 className="text-xs font-bold tracking-wider text-muted-foreground uppercase">
                               LED Display Frames
                             </h4>
-                            <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 xl:grid-cols-4">
+                            <div className="grid grid-cols-2 gap-x-2 gap-y-4 sm:grid-cols-3 xl:grid-cols-4">
                               {ledPanels.map(renderPanelCard)}
                             </div>
                           </div>
@@ -803,8 +799,8 @@ function Kiosk() {
             </main>
 
             {/* ===================== Master frame (right sidebar) ===================== */}
-            <aside ref={sidebarRef} className="lg:sticky lg:top-20 lg:self-start animate-fade-in">
-              <div className="rounded-xl border border-border/80 bg-background/50 backdrop-blur-md p-4 shadow-md relative overflow-hidden">
+            <aside ref={sidebarRef} className="lg:sticky lg:top-20 lg:self-start animate-fade-in max-h-[calc(100vh-6rem)] overflow-y-auto scrollbar-hide rounded-xl">
+              <div className="rounded-xl border border-border/80 bg-background/50 backdrop-blur-md p-4 shadow-md relative">
                 {true ? (
                   <>
                     <div className="mb-3 flex flex-col gap-2">

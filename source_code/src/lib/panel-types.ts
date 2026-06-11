@@ -113,7 +113,7 @@ export const PANELS: Record<string, PanelDef> = {
   "2m-3": {
     id: "2m-3",
     category: "2M",
-    label: "2M · 3 gang horizontal",
+    label: "2M · 3 gang stacked",
     cols: 3,
     rows: 1,
     frame: { w: 290, h: 280 },

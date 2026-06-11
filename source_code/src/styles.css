@@ -190,8 +190,8 @@
 .backlit-blue {
   position: relative;
   transition: all 0.25s ease;
-  border: 1.5px solid #1d68e8 !important;
-  background-color: #05122e !important;
+  border: 1.5px solid var(--slot-border, #1d68e8) !important;
+  background-color: var(--slot-bg, #05122e) !important;
   box-shadow: none !important;
 }
 .backlit-blue::after {
@@ -199,7 +199,7 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(ellipse at 50% 50%, rgba(29,104,232,0.15) 0%, transparent 70%);
+  background: radial-gradient(ellipse at 50% 50%, var(--slot-glow, rgba(29,104,232,0.15)) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -208,8 +208,8 @@
 .backlit-blue-active {
   position: relative;
   transition: all 0.25s ease;
-  border: 2px solid #3b8eff !important;
-  background-color: #061830 !important;
+  border: 2px solid var(--slot-border-active, #3b8eff) !important;
+  background-color: var(--slot-bg-active, #061830) !important;
   box-shadow: none !important;
 }
 .backlit-blue-active::after {
@@ -217,9 +217,21 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(ellipse at 50% 50%, rgba(59,142,255,0.25) 0%, transparent 70%);
+  background: radial-gradient(ellipse at 50% 50%, var(--slot-glow-active, rgba(59,142,255,0.25)) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
+}
+
+.slot-icon-standby {
+  color: var(--slot-icon, #7ab8ff);
+  filter: drop-shadow(0 0 3px var(--slot-icon-glow, #1d68e8));
+  transition: all 0.3s ease;
+}
+
+.slot-icon-active {
+  color: var(--slot-icon-active, #ffffff);
+  filter: drop-shadow(0 0 6px var(--slot-icon-glow-active, #3b8eff)) drop-shadow(0 0 2px rgba(255,255,255,0.8));
+  transition: all 0.3s ease;
 }
 
 /* --- Green standby (dim) --- */
@@ -338,4 +350,15 @@
 
 .dark .ambient-glow-3 {
   background: radial-gradient(circle, rgba(59, 130, 246, 0.07) 0%, transparent 70%);
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }

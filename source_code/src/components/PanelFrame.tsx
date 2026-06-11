@@ -15,13 +15,10 @@ export function SlotOverlay({
 }) {
   if (!overlay) return null;
 
-  // Always use blue shade
-  const standby = "rgba(29, 104, 232, 0.75)";
-  const active = "#3b8eff";
-  const color = isOn ? active : standby;
-  const filter = isOn
-    ? "drop-shadow(0 0 5px #3b8eff) drop-shadow(0 0 2px #fff)"
-    : "drop-shadow(0 0 3px #1d68e8)";
+  const color = blue ? (isOn ? "var(--slot-active, #ffffff)" : "var(--slot-icon, #7ab8ff)") : "#9ca3af";
+  const filter = blue ? (isOn
+    ? "drop-shadow(0 0 5px var(--slot-shadow, #3b8eff)) drop-shadow(0 0 2px rgba(255,255,255,0.8))"
+    : "drop-shadow(0 0 3px var(--slot-icon-glow, #1d68e8))") : "none";
 
   switch (overlay) {
     case "arrows":
@@ -144,13 +141,10 @@ export function PowerSlotIcon({
   const dotH = 2.5 * scale;
   const gap = 1 * scale;
 
-  // Always use blue shade
-  const standby = "rgba(29, 104, 232, 0.75)";
-  const active = "#3b8eff";
-  const color = isOn ? active : standby;
-  const filter = isOn
-    ? "drop-shadow(0 0 5px #3b8eff) drop-shadow(0 0 2px #fff)"
-    : "drop-shadow(0 0 3px #1d68e8)";
+  const color = blue ? (isOn ? "var(--slot-active, #ffffff)" : "var(--slot-icon, #7ab8ff)") : "#9ca3af";
+  const filter = blue ? (isOn
+    ? "drop-shadow(0 0 5px var(--slot-shadow, #3b8eff)) drop-shadow(0 0 2px rgba(255,255,255,0.8))"
+    : "drop-shadow(0 0 3px var(--slot-icon-glow, #1d68e8))") : "none";
 
   return (
     <div className="relative w-full h-full transition-all duration-300" style={{ filter }}>
@@ -214,12 +208,18 @@ export function PanelFrame({
   const BLACK_THEME = COLOR_THEMES.find((t) => t.id === "black")
     || { id: "black", name: "Black", bg: "#0a0a0a", border: "#1a1a1a", btnBg: "#111111", text: "#FFFFFF", previewBg: "#0a0a0a" };
 
-  // Pro series is strictly black
-  const forcedColor = activeSeries === "pro" ? "black" : (config.color || "black");
+  const isPreview = !renderSlot;
 
-  const activeTheme = forcedColor
-    ? (COLOR_THEMES.find((t) => t.id === forcedColor) || BLACK_THEME)
+  // Previews (catalog) should always be white/neutral. Master frame follows config.
+  const activeColor = isPreview
+    ? "white"
+    : (activeSeries === "pro" ? "black" : (config.color || "black"));
+
+  const activeTheme = activeColor
+    ? (COLOR_THEMES.find((t) => t.id === activeColor) || BLACK_THEME)
     : BLACK_THEME;
+
+  const isWhite = activeTheme.id === "white" || activeTheme.bg === "#FFFFFF" || activeTheme.bg === "#F8F7F4";
 
   const w = def.frame.w * scale;
   const h = def.frame.h * scale;
@@ -266,8 +266,10 @@ export function PanelFrame({
   } else if (activeSeries === "pro") {
     frameBorderRadius = 5 * scale;
     frameBorderWidth = 1.2 * scale;
-    frameBorderColor = "#1F1F1F";
-    frameBoxShadow = `inset 0 0 ${8 * scale}px rgba(0,0,0,0.85), 0 ${2 * scale}px ${6 * scale}px rgba(0,0,0,0.45)`;
+    frameBorderColor = isWhite ? "#E4E4E7" : "#1F1F1F";
+    frameBoxShadow = isWhite
+      ? `0 ${3 * scale}px ${10 * scale}px rgba(0,0,0,0.05)`
+      : `inset 0 0 ${8 * scale}px rgba(0,0,0,0.85), 0 ${2 * scale}px ${6 * scale}px rgba(0,0,0,0.45)`;
   } else if (activeSeries === "pro-plus") {
     frameBorderRadius = 12 * scale;
     frameBorderWidth = 2 * scale;
@@ -286,6 +288,24 @@ export function PanelFrame({
     }
   }
 
+  let ledActiveColor = "#3b8eff";
+  let ledActiveShadow = "rgba(59,142,255,0.8)";
+  let ledActiveGlow = "rgba(59,142,255,0.15)";
+
+  if (activeTheme.id === "rose-gold") {
+    ledActiveColor = "#ffffff";
+    ledActiveShadow = "rgba(255,255,255,0.9)";
+    ledActiveGlow = "rgba(255,255,255,0.25)";
+  } else if (activeTheme.id === "grey") {
+    ledActiveColor = "#ffffff";
+    ledActiveShadow = "rgba(255,255,255,0.9)";
+    ledActiveGlow = "rgba(255,255,255,0.2)";
+  } else if (activeTheme.id === "white" || isWhite) {
+    ledActiveColor = "#f5a623";
+    ledActiveShadow = "rgba(245,166,35,0.8)";
+    ledActiveGlow = "rgba(245,166,35,0.15)";
+  }
+
   return (
     <div
       className={cn(
@@ -301,7 +321,19 @@ export function PanelFrame({
         borderRadius: frameBorderRadius,
         backgroundColor: activeTheme.bg,
         boxShadow: frameBoxShadow,
-      }}
+        "--slot-bg": activeTheme.id === "black" ? "#05122e" : activeTheme.bg,
+        "--slot-border": activeTheme.id === "black" ? "#1d68e8" : (isWhite ? "rgba(0,0,0,0.25)" : "rgba(255,255,255,0.25)"),
+        "--slot-bg-active": activeTheme.id === "black" ? "#061830" : activeTheme.bg,
+        "--slot-border-active": activeTheme.id === "black" ? "#3b8eff" : ledActiveColor,
+        "--slot-glow": activeTheme.id === "black" ? "rgba(29,104,232,0.15)" : "transparent",
+        "--slot-glow-active": activeTheme.id === "black" ? "rgba(59,142,255,0.25)" : ledActiveGlow,
+        "--slot-icon": activeTheme.id === "black" ? "#7ab8ff" : (isWhite ? "#71717A" : "rgba(255,255,255,0.6)"),
+        "--slot-icon-glow": activeTheme.id === "black" ? "#1d68e8" : "transparent",
+        "--slot-active": activeTheme.id === "black" ? "#ffffff" : ledActiveColor,
+        "--slot-shadow": ledActiveShadow,
+        "--slot-icon-active": activeTheme.id === "black" ? "#ffffff" : ledActiveColor,
+        "--slot-icon-glow-active": ledActiveShadow,
+      } as React.CSSProperties}
     >
       {/* Pro+ inner glow highlighting */}
       {activeSeries === "pro-plus" && (
@@ -1220,9 +1252,8 @@ export function PanelFrame({
               </div>
             );
           }
-
-          const blueFilter = "drop-shadow(0 0 3px #1d68e8)";
-          const blueColor = "rgba(29, 104, 232, 0.85)";
+          const blueFilter = isPreview ? "none" : "drop-shadow(0 0 3px var(--slot-icon-glow, #1d68e8))";
+          const blueColor = isPreview ? "var(--slot-icon, #9ca3af)" : "var(--slot-icon, #7ab8ff)";
 
           return (
             <div key={i} style={itemStyle} className="flex items-center justify-center">
@@ -1234,25 +1265,30 @@ export function PanelFrame({
                   width: squareSize,
                   height: squareSize,
                   borderRadius: 3 * scale,
+                  borderColor: (!iconId && !item.overlay)
+                    ? (isWhite ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.25)')
+                    : (isPreview ? 'var(--slot-border)' : undefined),
                 }}
                 className={cn(
-                  "flex items-center justify-center border transition relative shadow-sm shrink-0",
+                  "flex items-center justify-center border transition relative shrink-0",
                   onSlotClick && "hover:opacity-80",
-                  (iconId || item.overlay) ? "backlit-blue" : "border-dashed border-border/40",
+                  (iconId || item.overlay)
+                    ? (isPreview ? "bg-transparent shadow-none" : "backlit-blue shadow-sm")
+                    : "border-dashed shadow-sm",
                 )}
               >
                 {Icon ? (
                   iconId === "power" ? (
                     item.overlay === "power-droplet" ? (
-                      <SlotOverlay overlay="power-droplet" size={squareSize} blue={true} />
+                      <SlotOverlay overlay="power-droplet" size={squareSize} blue={!isPreview} />
                     ) : (
-                      <PowerSlotIcon scale={scale} size={squareSize} blue={true} />
+                      <PowerSlotIcon scale={scale} size={squareSize} blue={!isPreview} />
                     )
                   ) : (
-                    <Icon size={squareSize * 0.45} strokeWidth={1.5} style={{ color: blueColor, filter: blueFilter }} />
+                    <Icon size={squareSize * 0.45} strokeWidth={1.5} style={{ color: blueColor, filter: blueFilter, opacity: isPreview ? 0.8 : 1 }} />
                   )
                 ) : item.overlay ? (
-                  <SlotOverlay overlay={item.overlay} size={squareSize} blue={true} />
+                  <SlotOverlay overlay={item.overlay} size={squareSize} blue={!isPreview} />
                 ) : null}
               </button>
             </div>
@@ -1266,6 +1302,20 @@ export function PanelFrame({
           // Calculate center line position
           const lineLeft = xColPos !== undefined ? xColPos * (btnW + spacing) - spacing / 2 : 0;
 
+          const isPreview = !renderSlot;
+          const decBorderColor = isPreview
+            ? "rgba(156,163,175,0.3)"
+            : (activeTheme.id === "black" ? "#1d68e8" : (isWhite ? "rgba(0,0,0,0.2)" : ledActiveColor));
+          const decColor = isPreview
+            ? "#9ca3af"
+            : (activeTheme.id === "black" ? "#3b8eff" : ledActiveColor);
+          const decBgColor = isPreview
+            ? "transparent"
+            : (activeTheme.id === "black" ? "#05122e" : activeTheme.btnBg);
+          const decFilter = isPreview
+            ? "none"
+            : `drop-shadow(0 0 3px ${activeTheme.id === "black" ? "#1d68e8" : ledActiveShadow})`;
+
           if (dec.type === "v-dotted-line") {
             const circleSize = 14 * scale;
             const lineH = def.rows * btnH + (def.rows - 1) * spacing;
@@ -1274,19 +1324,27 @@ export function PanelFrame({
                 {/* Dotted Line */}
                 <div
                   className="absolute left-1/2 -translate-x-1/2 h-full border-l-2 border-dashed"
-                  style={{ top: 0, borderColor: "rgba(29, 104, 232, 0.45)" }}
+                  style={{
+                    top: 0,
+                    borderColor: isPreview
+                      ? "rgba(128,128,128,0.2)"
+                      : (activeTheme.id === "black"
+                          ? "rgba(29, 104, 232, 0.45)"
+                          : (isWhite ? "rgba(204, 164, 59, 0.35)" : "rgba(255, 255, 255, 0.35)"))
+                  }}
                 />
                 {/* Brand Center Logo circle */}
                 <div
-                  className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border bg-[#05122e] flex items-center justify-center shadow-md"
+                  className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border flex items-center justify-center shadow-md"
                   style={{
                     top: lineH / 2,
                     width: circleSize * 1.3,
                     height: circleSize * 1.3,
-                    borderColor: "#1d68e8",
+                    borderColor: decBorderColor,
+                    backgroundColor: decBgColor,
                   }}
                 >
-                  <svg viewBox="0 0 24 24" className="fill-current text-white" style={{ width: '60%', height: '60%', filter: "drop-shadow(0 0 2px #3b8eff)" }}>
+                  <svg viewBox="0 0 24 24" className="fill-current text-white" style={{ width: '60%', height: '60%', filter: decFilter, color: decColor, opacity: isPreview ? 0.6 : 1 }}>
                     <path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.58,20C9,20 12,18 15,15C18,12 20,9 20,6H17V8Z" />
                   </svg>
                 </div>
@@ -1311,10 +1369,10 @@ export function PanelFrame({
                   top: btnH + spacing / 2 - 13 * scale,
                 }}
               >
-                <circle cx="5" cy="4.5" r="2.5" fill="#3b8eff" style={{ filter: "drop-shadow(0 0 2px #3b8eff)" }} />
-                <circle cx="5" cy="11.5" r="2.0" fill="#3b8eff" opacity="0.8" style={{ filter: "drop-shadow(0 0 1.5px rgba(59,142,255,0.8))" }} />
-                <circle cx="5" cy="18.5" r="1.5" fill="#3b8eff" opacity="0.6" />
-                <circle cx="5" cy="25.5" r="1.1" fill="#3b8eff" opacity="0.45" />
+                <circle cx="5" cy="4.5" r="2.5" fill={decColor} opacity={isPreview ? 0.4 : 1} style={{ filter: isPreview ? "none" : `drop-shadow(0 0 2px ${decColor})` }} />
+                <circle cx="5" cy="11.5" r="2.0" fill={decColor} opacity={isPreview ? 0.3 : 0.8} style={{ filter: isPreview ? "none" : `drop-shadow(0 0 1.5px ${ledActiveShadow})` }} />
+                <circle cx="5" cy="18.5" r="1.5" fill={decColor} opacity={isPreview ? 0.2 : 0.6} />
+                <circle cx="5" cy="25.5" r="1.1" fill={decColor} opacity={isPreview ? 0.1 : 0.45} />
               </svg>
             );
           }
@@ -1325,16 +1383,17 @@ export function PanelFrame({
             return (
               <div
                 key={`dec-${idx}`}
-                className="absolute pointer-events-none -translate-x-1/2 -translate-y-1/2 rounded-full border bg-[#05122e] flex items-center justify-center shadow-md"
+                className="absolute pointer-events-none -translate-x-1/2 -translate-y-1/2 rounded-full border flex items-center justify-center shadow-md"
                 style={{
                   left: lineLeft,
                   top: lineH / 2,
                   width: circleSize * 1.1,
                   height: circleSize * 1.1,
-                  borderColor: "#1d68e8",
+                  borderColor: decBorderColor,
+                  backgroundColor: decBgColor,
                 }}
               >
-                <svg viewBox="0 0 24 24" className="fill-current text-white" style={{ width: '60%', height: '60%', filter: "drop-shadow(0 0 2px #3b8eff)" }}>
+                <svg viewBox="0 0 24 24" className="fill-current text-white" style={{ width: '60%', height: '60%', filter: decFilter, color: decColor, opacity: isPreview ? 0.6 : 1 }}>
                   <path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.58,20C9,20 12,18 15,15C18,12 20,9 20,6H17V8Z" />
                 </svg>
               </div>
@@ -1353,10 +1412,11 @@ export function PanelFrame({
                   top: lineH / 2,
                   width: circleSize,
                   height: circleSize,
-                  borderColor: "#1d68e8",
-                  color: "#3b8eff",
-                  backgroundColor: "#05122e",
-                  filter: "drop-shadow(0 0 3px #1d68e8)",
+                  borderColor: decBorderColor,
+                  color: decColor,
+                  backgroundColor: decBgColor,
+                  filter: decFilter,
+                  opacity: isPreview ? 0.6 : 1,
                 }}
               >
                 <Lock size={circleSize * 0.5} strokeWidth={2.5} />
@@ -1375,13 +1435,14 @@ export function PanelFrame({
                   top: btnH + spacing / 2,
                   width: circleSize,
                   height: circleSize,
-                  borderColor: "#1d68e8",
-                  color: "#3b8eff",
-                  backgroundColor: "#05122e",
-                  filter: "drop-shadow(0 0 3px #1d68e8)",
+                  borderColor: decBorderColor,
+                  color: decColor,
+                  backgroundColor: decBgColor,
+                  filter: decFilter,
+                  opacity: isPreview ? 0.6 : 1,
                 }}
               >
-                <Fan size={circleSize * 0.55} className="animate-spin" style={{ animationDuration: "8s" }} />
+                <Fan size={circleSize * 0.55} className={isPreview ? "" : "animate-spin"} style={{ animationDuration: "8s" }} />
               </div>
             );
           }
@@ -1397,10 +1458,11 @@ export function PanelFrame({
                   top: btnH + spacing / 2,
                   width: circleSize,
                   height: circleSize,
-                  borderColor: "#1d68e8",
-                  color: "#3b8eff",
-                  backgroundColor: "#05122e",
-                  filter: "drop-shadow(0 0 3px #1d68e8)",
+                  borderColor: decBorderColor,
+                  color: decColor,
+                  backgroundColor: decBgColor,
+                  filter: decFilter,
+                  opacity: isPreview ? 0.6 : 1,
                 }}
               >
                 <Lightbulb size={circleSize * 0.55} strokeWidth={2.5} />

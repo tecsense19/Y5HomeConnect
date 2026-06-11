@@ -44,14 +44,8 @@ function Slot({
     ? (isOn ? "backlit-blue-active" : "backlit-blue")
     : undefined;
 
-  const iconFilter = (iconId || overlay)
-    ? (isOn
-      ? "drop-shadow(0 0 6px #3b8eff) drop-shadow(0 0 2px #fff)"
-      : "drop-shadow(0 0 3px #1d68e8)")
-    : undefined;
-
-  const iconColor = (iconId || overlay)
-    ? (isOn ? "#ffffff" : "#7ab8ff")
+  const iconClass = (iconId || overlay)
+    ? (isOn ? "slot-icon-active" : "slot-icon-standby")
     : undefined;
 
   return (
@@ -62,21 +56,26 @@ function Slot({
         onClick={(e) => {
           if (iconId || overlay) { e.stopPropagation(); setIsOn(!isOn); }
         }}
-        style={{ width: size, height: size, borderRadius: 6 * scale }}
+        style={{ 
+          width: size, 
+          height: size, 
+          borderRadius: 6 * scale,
+          borderColor: (!iconId && !overlay && !isOver) ? 'var(--slot-border)' : undefined
+        }}
         className={cn(
           "flex items-center justify-center border transition-all duration-300 shrink-0",
           !iconId && !overlay && (isOver
             ? "border-2 border-destructive bg-destructive/5"
-            : "border-dashed border-border/70"),
+            : "border-dashed"),
           glowClass,
         )}
       >
-        <div className="pointer-events-none flex items-center justify-center w-full h-full" style={{ color: iconColor }}>
+        <div className="pointer-events-none flex items-center justify-center w-full h-full">
           {Icon ? (
             iconId === "power" ? (
               <PowerSlotIcon scale={scale} size={size} isOn={isOn} blue={true} />
             ) : (
-              <Icon size={size * 0.45} strokeWidth={1.5} style={{ filter: iconFilter }} />
+              <Icon size={size * 0.45} strokeWidth={1.5} className={iconClass} />
             )
           ) : overlay ? (
             <SlotOverlay overlay={overlay} size={size} isOn={isOn} blue={true} />
