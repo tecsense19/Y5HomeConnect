@@ -1,0 +1,341 @@
+@import "tailwindcss";
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design system definition.
+ *
+ * The @theme inline block maps CSS custom properties to Tailwind utility
+ * classes (e.g. --color-primary -> bg-primary, text-primary).
+ *
+ * The :root and .dark blocks define the actual color values using oklch.
+ * All colors MUST use oklch format.
+ *
+ * To add a new semantic color:
+ * 1. Add the variable to :root (light value) and .dark (dark value)
+ * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --font-sans: "Outfit", "Inter", sans-serif;
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0.03 261);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0.03 261);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0.03 261);
+  --primary: oklch(0.35 0.08 155);
+  --primary-foreground: oklch(0.985 0.002 247);
+  --secondary: oklch(0.965 0.007 248);
+  --secondary-foreground: oklch(0.25 0.04 155);
+  --muted: oklch(0.965 0.007 248);
+  --muted-foreground: oklch(0.55 0.03 257);
+  --accent: oklch(0.965 0.007 248);
+  --accent-foreground: oklch(0.25 0.04 155);
+  --destructive: oklch(0.38 0.09 155);
+  --destructive-foreground: oklch(0.985 0.002 247);
+  --border: oklch(0.925 0.012 255);
+  --input: oklch(0.925 0.012 255);
+  --ring: oklch(0.45 0.07 155);
+  --chart-1: oklch(0.55 0.12 80);
+  --chart-2: oklch(0.45 0.10 155);
+  --chart-3: oklch(0.40 0.07 227);
+  --chart-4: oklch(0.65 0.14 80);
+  --chart-5: oklch(0.35 0.08 155);
+  --sidebar: oklch(0.985 0.002 247);
+  --sidebar-foreground: oklch(0.145 0.03 261);
+  --sidebar-primary: oklch(0.35 0.08 155);
+  --sidebar-primary-foreground: oklch(0.985 0.002 247);
+  --sidebar-accent: oklch(0.965 0.007 248);
+  --sidebar-accent-foreground: oklch(0.25 0.04 155);
+  --sidebar-border: oklch(0.925 0.012 255);
+  --sidebar-ring: oklch(0.45 0.07 155);
+}
+
+.dark {
+  --background: oklch(0.14 0.03 261);
+  --foreground: oklch(0.985 0.002 247);
+  --card: oklch(0.21 0.03 261);
+  --card-foreground: oklch(0.985 0.002 247);
+  --popover: oklch(0.21 0.03 261);
+  --popover-foreground: oklch(0.985 0.002 247);
+  --primary: oklch(0.92 0.012 255);
+  --primary-foreground: oklch(0.21 0.03 261);
+  --secondary: oklch(0.28 0.03 260);
+  --secondary-foreground: oklch(0.985 0.002 247);
+  --muted: oklch(0.28 0.03 260);
+  --muted-foreground: oklch(0.70 0.03 257);
+  --accent: oklch(0.28 0.03 260);
+  --accent-foreground: oklch(0.985 0.002 247);
+  --destructive: oklch(0.55 0.10 155);
+  --destructive-foreground: oklch(0.985 0.002 247);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.50 0.06 155);
+  --chart-1: oklch(0.55 0.12 80);
+  --chart-2: oklch(0.60 0.14 155);
+  --chart-3: oklch(0.65 0.14 80);
+  --chart-4: oklch(0.55 0.18 303);
+  --chart-5: oklch(0.55 0.18 16);
+  --sidebar: oklch(0.21 0.03 261);
+  --sidebar-foreground: oklch(0.985 0.002 247);
+  --sidebar-primary: oklch(0.50 0.12 155);
+  --sidebar-primary-foreground: oklch(0.985 0.002 247);
+  --sidebar-accent: oklch(0.28 0.03 260);
+  --sidebar-accent-foreground: oklch(0.985 0.002 247);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.551 0.027 264.364);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+}
+
+.premium-texture-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  mix-blend-mode: multiply;
+  border-radius: inherit;
+}
+
+.lighting-hover-effect {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lighting-hover-effect:hover {
+  border-color: rgba(245, 166, 35, 0.35) !important;
+  box-shadow: 0 10px 30px -10px rgba(245, 166, 35, 0.18), 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+  transform: translateY(-3px);
+}
+
+.lighting-hover-effect:hover .lighting-preview-box {
+  background: radial-gradient(circle at 50% 0%, rgba(245, 166, 35, 0.16) 0%, rgba(255, 255, 255, 1) 75%) !important;
+  border-color: rgba(245, 166, 35, 0.25) !important;
+  box-shadow: inset 0 0 20px rgba(245, 166, 35, 0.08) !important;
+}
+
+.dark .lighting-hover-effect:hover .lighting-preview-box {
+  background: radial-gradient(circle at 50% 0%, rgba(245, 166, 35, 0.18) 0%, oklch(0.21 0.03 261) 75%) !important;
+  border-color: rgba(245, 166, 35, 0.3) !important;
+  box-shadow: inset 0 0 20px rgba(245, 166, 35, 0.12) !important;
+}
+
+.lighting-preview-box {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================
+   Neon Backlit Switch Styles — Always ON (matches reference photo)
+   Blue  = Master / Power switch
+   Green = All other switches (curtain, bell, bulb, fan…)
+   ============================================================ */
+
+/* --- Blue standby (dim) --- */
+.backlit-blue {
+  position: relative;
+  transition: all 0.25s ease;
+  border: 1.5px solid #1d68e8 !important;
+  background-color: #05122e !important;
+  box-shadow: none !important;
+}
+.backlit-blue::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(ellipse at 50% 50%, rgba(29,104,232,0.15) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* --- Blue active (bright) --- */
+.backlit-blue-active {
+  position: relative;
+  transition: all 0.25s ease;
+  border: 2px solid #3b8eff !important;
+  background-color: #061830 !important;
+  box-shadow: none !important;
+}
+.backlit-blue-active::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(ellipse at 50% 50%, rgba(59,142,255,0.25) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* --- Green standby (dim) --- */
+.backlit-green {
+  position: relative;
+  transition: all 0.25s ease;
+  border: 1.5px solid #0fa84a !important;
+  background-color: #021b0e !important;
+  box-shadow: none !important;
+}
+.backlit-green::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(ellipse at 50% 50%, rgba(15,168,74,0.15) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* --- Green active (bright) --- */
+.backlit-green-active {
+  position: relative;
+  transition: all 0.25s ease;
+  border: 2px solid #22c55e !important;
+  background-color: #031f10 !important;
+  box-shadow: none !important;
+}
+.backlit-green-active::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(ellipse at 50% 50%, rgba(34,197,94,0.25) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Legacy warm-amber backlit (kept for any non-master non-slot usage) */
+.backlit-btn {
+  position: relative;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  box-shadow: 0 0 6px rgba(245, 166, 35, 0.15) !important;
+}
+.backlit-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(245, 166, 35, 0.15) 0%, transparent 70%);
+  opacity: 0.6;
+  pointer-events: none;
+}
+.dark .backlit-btn {
+  box-shadow: 0 0 8px rgba(245, 166, 35, 0.2) !important;
+}
+
+/* Ambient background glow elements */
+.ambient-glow-1 {
+  position: absolute;
+  top: -10%;
+  left: -15%;
+  width: 45vw;
+  height: 45vw;
+  background: radial-gradient(circle, rgba(245, 166, 35, 0.09) 0%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+  animation: pulseGlow 18s infinite alternate ease-in-out;
+}
+
+.ambient-glow-2 {
+  position: absolute;
+  top: 50%;
+  right: -15%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.06) 0%, transparent 70%);
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
+  animation: pulseGlow 22s infinite alternate-reverse ease-in-out;
+}
+
+.ambient-glow-3 {
+  position: absolute;
+  top: 20%;
+  right: 15%;
+  width: 35vw;
+  height: 35vw;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes pulseGlow {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translate(4%, 3%) scale(1.1);
+    opacity: 1;
+  }
+}
+
+.dark .ambient-glow-1 {
+  background: radial-gradient(circle, rgba(245, 166, 35, 0.12) 0%, transparent 70%);
+}
+
+.dark .ambient-glow-2 {
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.08) 0%, transparent 70%);
+}
+
+.dark .ambient-glow-3 {
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.07) 0%, transparent 70%);
+}
