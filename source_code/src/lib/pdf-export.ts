@@ -6,7 +6,7 @@ import { PANELS, type CartItem } from "./panel-types";
 import { PanelFrame } from "@/components/PanelFrame";
 import Y5homeLogo from "@/assets/Y5home_Technologies.webp";
 
-function getPanelDescription(it: CartItem): string {
+function PanelDescription({ it, isSingle }: { it: CartItem; isSingle?: boolean }) {
   const panelLabel = PANELS[it.config.type]?.label || "Unknown Frame";
   const series = it.config.series;
   const seriesLabel =
@@ -27,12 +27,28 @@ function getPanelDescription(it: CartItem): string {
           : it.config.color === "rose-gold"
             ? "Rose Gold"
             : "Black";
-  let desc = `${panelLabel} (${seriesLabel} · ${colorLabel})`;
-  if (it.config.location) {
-    desc += ` · Location: ${it.config.location}`;
-  }
-  desc += ` · ${it.qty} pcs`;
-  return desc;
+
+  return createElement(
+    "div",
+    {
+      style: {
+        color: "#7a5a0f",
+        fontSize: isSingle ? "14px" : "12px",
+        fontWeight: 600,
+        margin: "0 auto",
+        display: "inline-flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        textAlign: "left",
+        gap: isSingle ? "5px" : "3px",
+        lineHeight: 1.3,
+      },
+    },
+    createElement("span", null, `Name: ${panelLabel}`),
+    createElement("span", null, `Series: ${seriesLabel} (${colorLabel})`),
+    it.config.location ? createElement("span", null, `Location: ${it.config.location}`) : null,
+    createElement("span", null, `Qty: ${it.qty} pcs`)
+  );
 }
 
 async function renderHidden(node: React.ReactNode): Promise<HTMLDivElement> {
@@ -176,43 +192,7 @@ export async function exportCartPdf(
               },
               it.name,
             ),
-            createElement(
-              "p",
-              {
-                style: {
-                  fontSize: "16px",
-                  fontWeight: 700,
-                  color: "#7a5a0f",
-                  margin: 0,
-                },
-              },
-              getPanelDescription(it),
-            ),
-            it.config.location && createElement(
-              "div",
-              {
-                style: {
-                  marginTop: "12px",
-                  display: "flex",
-                  justifyContent: "center",
-                }
-              },
-              createElement(
-                "span",
-                {
-                  style: {
-                    fontSize: "15px",
-                    fontWeight: 700,
-                    color: "#111827",
-                    backgroundColor: "#f3f4f6",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "6px",
-                    padding: "4px 12px",
-                  }
-                },
-                `📍 Location: ${it.config.location}`
-              )
-            ),
+            createElement(PanelDescription, { it, isSingle: true })
           ),
         ),
       );
@@ -314,44 +294,7 @@ export async function exportCartPdf(
                 },
                 it.name,
               ),
-              createElement(
-                "p",
-                {
-                  style: {
-                    color: "#7a5a0f",
-                    fontSize: "13px",
-                    fontWeight: 700,
-                    margin: 0,
-                    textAlign: "center",
-                  },
-                },
-                getPanelDescription(it),
-              ),
-              it.config.location && createElement(
-                "div",
-                {
-                  style: {
-                    marginTop: "6px",
-                    display: "flex",
-                    justifyContent: "center",
-                  }
-                },
-                createElement(
-                  "span",
-                  {
-                    style: {
-                      fontSize: "12px",
-                      fontWeight: 700,
-                      color: "#111827",
-                      backgroundColor: "#f3f4f6",
-                      border: "1px solid #d1d5db",
-                      borderRadius: "4px",
-                      padding: "2px 8px",
-                    }
-                  },
-                  `📍 ${it.config.location}`
-                )
-              ),
+              createElement(PanelDescription, { it, isSingle: false })
             ),
           ),
         ),

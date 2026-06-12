@@ -210,10 +210,8 @@ export function PanelFrame({
 
   const isPreview = !renderSlot;
 
-  // Previews (catalog) should always be white/neutral. Master frame follows config.
-  const activeColor = isPreview
-    ? "white"
-    : (activeSeries === "pro" ? "black" : (config.color || "black"));
+  // Master frame follows config. Catalog passes the default color explicitly, and cart uses saved color.
+  const activeColor = config.color || "black";
 
   const activeTheme = activeColor
     ? (COLOR_THEMES.find((t) => t.id === activeColor) || BLACK_THEME)
@@ -1329,8 +1327,8 @@ export function PanelFrame({
                     borderColor: isPreview
                       ? "rgba(128,128,128,0.2)"
                       : (activeTheme.id === "black"
-                          ? "rgba(29, 104, 232, 0.45)"
-                          : (isWhite ? "rgba(204, 164, 59, 0.35)" : "rgba(255, 255, 255, 0.35)"))
+                        ? "rgba(29, 104, 232, 0.45)"
+                        : (isWhite ? "rgba(204, 164, 59, 0.35)" : "rgba(255, 255, 255, 0.35)"))
                   }}
                 />
                 {/* Brand Center Logo circle */}

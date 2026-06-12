@@ -4,7 +4,7 @@ import { PANELS } from "@/lib/panel-types";
 import { PanelFrame } from "./PanelFrame";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ShoppingCart, Trash2, Printer, FileText, Layers } from "lucide-react";
+import { Pencil, ShoppingCart, Trash2, Printer, FileText, Layers } from "lucide-react";
 import { Input } from "./ui/input";
 import { exportCartPdf } from "@/lib/pdf-export";
 import { toast } from "sonner";
@@ -15,9 +15,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export function CartPanel() {
+interface CartPanelProps {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+  onEdit?: (item: any) => void;
+}
+
+export function CartPanel({ isOpen, setIsOpen, onEdit }: CartPanelProps) {
   const { items, remove, setQty, clear } = useCart();
-  const [open, setOpen] = useState(false);
   const [printing, setPrinting] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
@@ -43,7 +48,7 @@ export function CartPanel() {
   }
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button variant="outline" size="lg" className="relative gap-2 border-border bg-background text-foreground hover:bg-secondary/40 hover:text-foreground">
           <ShoppingCart size={18} className="text-[#034B25]" />
@@ -104,9 +109,16 @@ export function CartPanel() {
                   <span className="text-xs text-muted-foreground">pcs</span>
                 </div>
               </div>
-              <Button size="icon" variant="ghost" onClick={() => remove(it.id)}>
-                <Trash2 size={16} className="text-destructive" />
-              </Button>
+              <div className="flex flex-col gap-1">
+                {onEdit && (
+                  <Button size="icon" variant="ghost" onClick={() => onEdit(it)} className="h-8 w-8 text-primary hover:text-primary/80">
+                    <Pencil size={16} />
+                  </Button>
+                )}
+                <Button size="icon" variant="ghost" onClick={() => remove(it.id)} className="h-8 w-8 text-destructive hover:text-destructive/80">
+                  <Trash2 size={16} />
+                </Button>
+              </div>
             </div>
           ))}
         </div>
