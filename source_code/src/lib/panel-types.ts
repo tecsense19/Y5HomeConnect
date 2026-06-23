@@ -75,8 +75,9 @@ export interface PanelDef {
   inset: number;
   items: GridItemDef[];
   decorations?: DecorationDef[];
-  /** When slots use colSpan > 1, set this to the typical colSpan so squareSize is computed correctly */
   cellColSpan?: number;
+  hideFromCatalog?: boolean;
+  seriesFilter?: string[];
 }
 
 export const PANELS: Record<string, PanelDef> = {
@@ -118,6 +119,7 @@ export const PANELS: Record<string, PanelDef> = {
     rows: 1,
     frame: { w: 290, h: 280 },
     inset: 24,
+    hideFromCatalog: true,
     items: [
       { type: "slot", x: 0, y: 0 },
       { type: "slot", x: 1, y: 0 },
@@ -148,6 +150,7 @@ export const PANELS: Record<string, PanelDef> = {
     rows: 2,
     frame: { w: 290, h: 280 },
     inset: 24,
+    hideFromCatalog: true,
     items: [
       { type: "slot", x: 0, y: 0 },
       { type: "slot", x: 1, y: 0, overlay: "arrows-horizontal" },
@@ -182,6 +185,7 @@ export const PANELS: Record<string, PanelDef> = {
     rows: 2,
     frame: { w: 290, h: 280 },
     inset: 24,
+    hideFromCatalog: true,
     items: [
       { type: "slot", x: 0, y: 0 },
       { type: "slot", x: 1, y: 0, overlay: "arrow-up" },
@@ -204,6 +208,7 @@ export const PANELS: Record<string, PanelDef> = {
     rows: 2,
     frame: { w: 500, h: 280 },
     inset: 24,
+    hideFromCatalog: true,
     items: [
       { type: "slot", x: 0, y: 0 },
       { type: "slot", x: 1, y: 0 },
@@ -250,6 +255,7 @@ export const PANELS: Record<string, PanelDef> = {
     rows: 2,
     frame: { w: 500, h: 280 },
     inset: 24,
+    hideFromCatalog: true,
     items: [
       { type: "slot", x: 0, y: 0, overlay: "arrow-up" },
       { type: "slot", x: 1, y: 0 },
@@ -271,6 +277,7 @@ export const PANELS: Record<string, PanelDef> = {
     id: "4m-4",
     category: "4M",
     label: "4M · 8 gang (col1 & col4=arrows, fan + fan)",
+    hideFromCatalog: true,
     cols: 4,
     rows: 2,
     frame: { w: 500, h: 280 },
@@ -395,6 +402,7 @@ export const PANELS: Record<string, PanelDef> = {
     id: "8m-2",
     category: "8M",
     label: "8M · 6 gang + Dimmer + blank",
+    hideFromCatalog: true,
     cols: 9,
     rows: 2,
     frame: { w: 680, h: 320 },
@@ -520,6 +528,7 @@ export const PANELS: Record<string, PanelDef> = {
     rows: 2,
     frame: { w: 720, h: 320 },
     inset: 28,
+    hideFromCatalog: true,
     items: [
       { type: "slot", x: 0, y: 0, overlay: "arrow-up" },
       { type: "slot", x: 1, y: 0 },
@@ -547,6 +556,7 @@ export const PANELS: Record<string, PanelDef> = {
     rows: 2,
     frame: { w: 720, h: 320 },
     inset: 28,
+    hideFromCatalog: true,
     items: [
       { type: "slot", x: 0, y: 0, overlay: "arrow-up" },
       { type: "slot", x: 1, y: 0 },
@@ -576,6 +586,7 @@ export const PANELS: Record<string, PanelDef> = {
     rows: 2,
     frame: { w: 720, h: 320 },
     inset: 28,
+    hideFromCatalog: true,
     items: [
       { type: "slot", x: 0, y: 0, overlay: "arrow-up" },
       { type: "slot", x: 1, y: 0 },
@@ -605,6 +616,7 @@ export const PANELS: Record<string, PanelDef> = {
     rows: 2,
     frame: { w: 720, h: 320 },
     inset: 28,
+    hideFromCatalog: true,
     items: [
       { type: "slot", x: 0, y: 0 },
       { type: "slot", x: 1, y: 0 },
@@ -666,6 +678,7 @@ export const PANELS: Record<string, PanelDef> = {
     id: "12m-2",
     category: "12M",
     label: "12M · 10 gang (Col 5 arrows-h/collapse)",
+    hideFromCatalog: true,
     cols: 5,
     rows: 4,
     frame: { w: 640, h: 460 },
@@ -748,6 +761,7 @@ export const PANELS: Record<string, PanelDef> = {
     id: "12m-5",
     category: "12M",
     label: "12M · 12 gang with 2x2 middle slots",
+    hideFromCatalog: true,
     cols: 10,
     rows: 4,
     frame: { w: 640, h: 460 },
@@ -776,6 +790,7 @@ export const PANELS: Record<string, PanelDef> = {
     id: "12m-6",
     category: "12M",
     label: "12M · 12 gang (Col 5 arrows-h/collapse)",
+    hideFromCatalog: true,
     cols: 10,
     rows: 4,
     frame: { w: 640, h: 460 },
@@ -809,6 +824,7 @@ export const PANELS: Record<string, PanelDef> = {
     frame: { w: 640, h: 460 },
     inset: 28,
     cellColSpan: 2,
+    hideFromCatalog: true,
     items: [
       { type: "slot", x: 0, y: 0, colSpan: 2 },
       { type: "slot", x: 2, y: 0, colSpan: 2 },
@@ -1364,6 +1380,27 @@ export const PANELS: Record<string, PanelDef> = {
     id: "arch-4m-8switch",
     category: "4M",
     label: "4M 8 Switch",
+    seriesFilter: ["elite", "pro"],
+    cols: 4,
+    rows: 2,
+    frame: { w: 500, h: 280 },
+    inset: 24,
+    items: [
+      { type: "slot", x: 0, y: 0 },
+      { type: "slot", x: 1, y: 0 },
+      { type: "slot", x: 2, y: 0 },
+      { type: "slot", x: 3, y: 0 },
+      { type: "slot", x: 0, y: 1 },
+      { type: "slot", x: 1, y: 1 },
+      { type: "slot", x: 2, y: 1 },
+      { type: "slot", x: 3, y: 1 },
+    ],
+  },
+  "arch-4m-8switch-proplus": {
+    id: "arch-4m-8switch-proplus",
+    category: "4M",
+    label: "4M 8 Switch",
+    seriesFilter: ["pro-plus"],
     cols: 6,
     rows: 2,
     frame: { w: 500, h: 280 },
@@ -1385,18 +1422,17 @@ export const PANELS: Record<string, PanelDef> = {
     id: "arch-4m-6switch",
     category: "4M",
     label: "4M 6 Switch",
-    cols: 7,
-    rows: 1,
+    cols: 4,
+    rows: 2,
     frame: { w: 500, h: 280 },
     inset: 24,
     items: [
       { type: "slot", x: 0, y: 0 },
       { type: "slot", x: 1, y: 0 },
-      { type: "slot", x: 2, y: 0 },
-      { type: "blank", x: 3, y: 0, specialType: "spacer" },
-      { type: "slot", x: 4, y: 0 },
-      { type: "slot", x: 5, y: 0 },
-      { type: "slot", x: 6, y: 0 },
+      { type: "slot", x: 0, y: 1 },
+      { type: "slot", x: 1, y: 1 },
+      { type: "slot", x: 2, y: 0, rowSpan: 2 },
+      { type: "slot", x: 3, y: 0, rowSpan: 2 },
     ],
   },
   "arch-4m-heavy": {
@@ -1662,7 +1698,7 @@ export function emptyConfig(type: PanelType, series: string = "classic"): PanelC
     slots[0] = "bell";
   } else if (type === "arch-2m-4switch") {
     slots.fill("light");
-  } else if (type === "arch-4m-8switch") {
+  } else if (type === "arch-4m-8switch" || type === "arch-4m-8switch-proplus") {
     slots.fill("light");
   } else if (type === "arch-4m-6switch") {
     slots.fill("light");

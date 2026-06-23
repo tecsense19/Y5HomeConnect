@@ -831,7 +831,7 @@ function Kiosk() {
                           <h3 className="text-2xl font-black">{section.section}</h3>
                         </div>
                         <div className="grid grid-cols-1 gap-x-2 gap-y-4 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-4">
-                          {section.items.map((p) => {
+                          {section.items.filter(p => !PANELS[p.type]?.hideFromCatalog).map((p) => {
                             const isSelected = masterType === p.type && JSON.stringify(master.slots) === JSON.stringify(p.slots);
                             return (
                               <CatalogCard key={p.id} preset={p} onPick={() => loadPreset(p)} catalogColor={catalogColor} isSelected={isSelected} />
@@ -847,7 +847,9 @@ function Kiosk() {
                 <div className="space-y-10">
                   {categories.map((cat) => {
                     const categoryPanels = Object.values(PANELS).filter(
-                      (p) => p.category === cat && (isArchitectSeries ? p.id.startsWith("arch-") : !p.id.startsWith("arch-") && !p.id.includes("q")),
+                      (p) => p.category === cat && !p.hideFromCatalog &&
+                        (isArchitectSeries ? p.id.startsWith("arch-") : !p.id.startsWith("arch-") && !p.id.includes("q")) &&
+                        (!p.seriesFilter || p.seriesFilter.includes(selectedSeries)),
                     );
 
                     const ledPanels = categoryPanels.filter((p) => p.id.includes("led"));
@@ -976,10 +978,11 @@ function Kiosk() {
                               {categories.map((cat) => {
                                 const frames = Object.values(PANELS).filter(
                                   (p) =>
-                                    p.category === cat &&
+                                    p.category === cat && !p.hideFromCatalog &&
                                     (isArchitectSeries
                                       ? p.id.startsWith("arch-")
-                                      : !p.id.startsWith("arch-") && !p.id.includes("q"))
+                                      : !p.id.startsWith("arch-") && !p.id.includes("q")) &&
+                                    (!p.seriesFilter || p.seriesFilter.includes(selectedSeries))
                                 );
                                 if (frames.length === 0) return null;
                                 return (
