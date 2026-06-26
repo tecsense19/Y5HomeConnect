@@ -56,9 +56,9 @@ function Slot({
         onClick={(e) => {
           if (iconId || overlay) { e.stopPropagation(); setIsOn(!isOn); }
         }}
-        style={{ 
-          width: size, 
-          height: size, 
+        style={{
+          width: size,
+          height: size,
           borderRadius: 6 * scale,
           borderColor: (!iconId && !overlay && !isOver) ? 'var(--slot-border)' : undefined
         }}

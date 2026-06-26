@@ -1253,6 +1253,8 @@ export function PanelFrame({
           const blueFilter = isPreview ? "none" : "drop-shadow(0 0 3px var(--slot-icon-glow, #1d68e8))";
           const blueColor = isPreview ? "var(--slot-icon, #9ca3af)" : "var(--slot-icon, #7ab8ff)";
 
+          const iconDef = iconId ? ICON_MAP[iconId] : null;
+
           return (
             <div key={i} style={itemStyle} className="flex items-center justify-center">
               <button
@@ -1263,6 +1265,7 @@ export function PanelFrame({
                   width: squareSize,
                   height: squareSize,
                   borderRadius: 3 * scale,
+                  overflow: "hidden",
                   borderColor: (!iconId && !item.overlay)
                     ? (isWhite ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.25)')
                     : (isPreview ? 'var(--slot-border)' : undefined),
@@ -1275,7 +1278,9 @@ export function PanelFrame({
                     : "border-dashed shadow-sm",
                 )}
               >
-                {Icon ? (
+                {iconDef?.image_path ? (
+                  <img src={iconDef.image_path} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", filter: isPreview ? "brightness(0) invert(60%)" : "brightness(0) invert(100%)", opacity: isPreview ? 0.8 : 1 }} />
+                ) : Icon ? (
                   iconId === "power" ? (
                     item.overlay === "power-droplet" ? (
                       <SlotOverlay overlay="power-droplet" size={squareSize} blue={!isPreview} />

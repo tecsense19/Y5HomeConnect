@@ -39,7 +39,11 @@ function DraggableIcon({ id }: { id: string }) {
         isDragging && "opacity-30",
       )}
     >
-      <Icon size={30} strokeWidth={1.5} />
+      {def.image_path ? (
+        <img src={def.image_path} alt={def.label} className="w-8 h-8 drop-shadow-sm opacity-80" style={{ objectFit: "contain", filter: "brightness(0)" }} />
+      ) : Icon ? (
+        <Icon size={30} strokeWidth={1.5} />
+      ) : null}
       <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
         {def.label}
       </span>
@@ -91,9 +95,9 @@ function DroppableSlot({
         onClick={(e) => {
           if (iconId || overlay) { e.stopPropagation(); setIsOn(!isOn); }
         }}
-        style={{ 
-          width: size, 
-          height: size, 
+        style={{
+          width: size,
+          height: size,
           borderRadius: 6 * scale,
           borderColor: (!iconId && !overlay && !isOver) ? 'var(--slot-border)' : undefined
         }}
@@ -322,9 +326,15 @@ export function PanelDesigner({ onSaved }: Props) {
       </div>
 
       <DragOverlay>
-        {DragIconComp ? (
-          <div className="flex aspect-square w-20 items-center justify-center rounded-xl border-2 border-destructive bg-card shadow-lg">
-            <DragIconComp size={36} strokeWidth={1.5} />
+        {dragDef ? (
+          <div className="flex aspect-square w-20 items-center justify-center rounded-xl border-2 border-destructive bg-card shadow-lg p-2 text-center">
+            {dragDef.image_path ? (
+              <img src={dragDef.image_path} alt={dragDef.label} className="w-10 h-10 drop-shadow-sm opacity-80" style={{ objectFit: "contain", filter: "brightness(0)" }} />
+            ) : DragIconComp ? (
+              <DragIconComp size={36} strokeWidth={1.5} />
+            ) : (
+              <span className="text-xs font-bold leading-tight">{dragDef.label}</span>
+            )}
           </div>
         ) : null}
       </DragOverlay>
