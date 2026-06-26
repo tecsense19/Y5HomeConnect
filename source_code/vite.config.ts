@@ -35,7 +35,20 @@ export default defineConfig(({ command, mode }) => {
       port: 8080,
       allowedHosts: [
         'poppy-sullen-overwrite.ngrok-free.dev'
-      ]
+      ],
+      proxy: {
+        '/image-proxy': {
+          target: 'http://localhost:8080',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/image-proxy/, '')
+        },
+        '/live-proxy': {
+          target: 'https://y5homecrm.websitedesign4you.com',
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/live-proxy/, '')
+        }
+      }
     },
   };
 });

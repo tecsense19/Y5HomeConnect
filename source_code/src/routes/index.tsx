@@ -74,7 +74,7 @@ function PaletteIcon({ id }: { id: string }) {
       ) : def.icon ? (
         <def.icon className="w-5 h-5 text-foreground drop-shadow-sm" />
       ) : null}
-      <span className="text-[9px] font-medium mt-1.5 uppercase tracking-wide text-muted-foreground">{def.label}</span>
+      <span className="text-[9px] font-medium mt-1.5 uppercase tracking-wide text-muted-foreground text-center line-clamp-2 leading-tight w-full break-words" title={def.label}>{def.label}</span>
     </div>
   );
 }
@@ -404,11 +404,27 @@ function Kiosk() {
 
               const original = originalIconMap[mapId] || originalIconMap[iconId];
 
+              let finalImageUrl = imageUrl;
+              try {
+                const urlObj = new URL(imageUrl);
+                if ((urlObj.hostname === '127.0.0.1' || urlObj.hostname === 'localhost') && urlObj.port === window.location.port) {
+                  finalImageUrl = `${window.location.protocol}//${window.location.host}${urlObj.pathname}`;
+                } else if (urlObj.hostname === 'y5homecrm.websitedesign4you.com' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+                  finalImageUrl = `/live-proxy${urlObj.pathname}`;
+                }
+              } catch (e) { }
+
+              let finalPath: string | undefined = undefined;
+              if (i.image_path && !isSystem) {
+                const sanitizedPath = i.image_path.replace(/\\/g, '/').replace(/^\//, '').replace(/ /g, '%20');
+                finalPath = `${finalImageUrl.replace(/\/$/, '')}/${sanitizedPath}`;
+              }
+
               const newIcon = {
                 id: iconId,
                 label: i.name,
                 icon: original?.icon,
-                image_path: (i.image_path && !isSystem) ? `${imageUrl}${i.image_path}` : undefined,
+                image_path: finalPath,
               };
               ICONS.push(newIcon);
               ICON_MAP[newIcon.id] = newIcon;
@@ -1144,7 +1160,7 @@ function Kiosk() {
                     </div>
 
                     {/* icon palette */}
-                    <div className="mt-4 rounded-lg border border-border bg-secondary/40 p-2">
+                    <div className="mt-4 rounded-lg border border-border bg-secondary/40 p-2 max-h-[45vh] overflow-y-auto">
                       <div className="grid grid-cols-[repeat(auto-fill,minmax(54px,1fr))] gap-1.5">
                         {ICONS.map((i) => (
                           <PaletteIcon key={i.id} id={i.id} />
