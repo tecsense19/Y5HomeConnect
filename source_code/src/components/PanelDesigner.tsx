@@ -40,7 +40,7 @@ function DraggableIcon({ id }: { id: string }) {
       )}
     >
       {def.image_path ? (
-        <img crossOrigin="anonymous" src={def.image_path} alt={def.label} className="w-8 h-8 drop-shadow-sm opacity-80" style={{ objectFit: "contain", filter: "brightness(0)" }} />
+        <img src={def.image_path} alt={def.label} className="w-8 h-8 drop-shadow-sm opacity-80" style={{ objectFit: "contain", filter: "brightness(0)" }} />
       ) : Icon ? (
         <Icon size={30} strokeWidth={1.5} />
       ) : null}

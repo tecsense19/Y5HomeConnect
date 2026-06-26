@@ -1279,7 +1279,7 @@ export function PanelFrame({
                 )}
               >
                 {iconDef?.image_path ? (
-                  <img crossOrigin="anonymous" src={iconDef.image_path} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", filter: isPreview ? "brightness(0) invert(60%)" : "brightness(0) invert(100%)", opacity: isPreview ? 0.8 : 1 }} />
+                  <img src={iconDef.image_path} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", filter: isPreview ? "brightness(0) invert(60%)" : "brightness(0) invert(100%)", opacity: isPreview ? 0.8 : 1 }} />
                 ) : Icon ? (
                   iconId === "power" ? (
                     item.overlay === "power-droplet" ? (
