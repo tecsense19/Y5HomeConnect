@@ -70,7 +70,7 @@ function PaletteIcon({ id }: { id: string }) {
       title={def.label}
     >
       {def.image_path ? (
-        <img src={def.image_path} alt={def.label} className="w-5 h-5 drop-shadow-sm opacity-80" style={{ objectFit: "contain", filter: "brightness(0)" }} />
+        <img crossOrigin="anonymous" src={def.image_path} alt={def.label} className="w-5 h-5 drop-shadow-sm opacity-80" style={{ objectFit: "contain", filter: "brightness(0)" }} />
       ) : def.icon ? (
         <def.icon className="w-5 h-5 text-foreground drop-shadow-sm" />
       ) : null}
@@ -150,7 +150,7 @@ function MasterSlot({
                 <PowerSlotIcon scale={scale} size={size} isOn={isOn} blue={true} />
               )
             ) : def?.image_path ? (
-              <img src={def.image_path} alt={def.label} className={iconClass} style={{ width: size * 5, height: size * 5, objectFit: "contain", filter: !isOn && glowClass?.includes("blue") ? "brightness(0) invert(0.6)" : (isOn ? "brightness(0) invert(1)" : "brightness(0)") }} />
+              <img crossOrigin="anonymous" src={def.image_path} alt={def.label} className={iconClass} style={{ width: size * 5, height: size * 5, objectFit: "contain", filter: !isOn && glowClass?.includes("blue") ? "brightness(0) invert(0.6)" : (isOn ? "brightness(0) invert(1)" : "brightness(0)") }} />
             ) : Icon ? (
               <Icon size={size * 5} strokeWidth={1.5} className={iconClass} />
             ) : null
@@ -1301,7 +1301,7 @@ function Kiosk() {
         {dragDef ? (
           <div className="flex aspect-square w-14 items-center justify-center rounded-xl border-2 border-amber-500/80 bg-card/95 backdrop-blur-sm shadow-xl p-1 text-center">
             {dragDef.image_path ? (
-              <img src={dragDef.image_path} alt={dragDef.label} className="w-7 h-7 drop-shadow-sm opacity-80" style={{ objectFit: "contain", filter: "brightness(0)" }} />
+              <img crossOrigin="anonymous" src={dragDef.image_path} alt={dragDef.label} className="w-7 h-7 drop-shadow-sm opacity-80" style={{ objectFit: "contain", filter: "brightness(0)" }} />
             ) : DragIconComp ? (
               <DragIconComp size={26} strokeWidth={1.5} />
             ) : (
