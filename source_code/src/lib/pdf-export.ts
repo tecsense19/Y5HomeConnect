@@ -65,10 +65,123 @@ async function renderHidden(node: React.ReactNode): Promise<HTMLDivElement> {
   return host;
 }
 
+async function convertSvgsToImages(host: HTMLElement) {
+  // 1. Fetch external SVG images and inline them so we can manipulate their colors safely
+  const imgs = Array.from(host.querySelectorAll("img"));
+  await Promise.all(
+    imgs.map(async (img) => {
+      if (!img.src || !img.src.toLowerCase().includes(".svg")) return;
+      try {
+        const res = await fetch(img.src);
+        if (!res.ok) return;
+        const text = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, "image/svg+xml");
+        const svg = doc.querySelector("svg");
+        if (svg) {
+          svg.style.cssText = img.style.cssText;
+          if (img.className) svg.setAttribute("class", img.className);
+
+          // Replace buggy css filters with explicit colors for html2canvas
+          const filterStr = img.style.filter || "";
+          if (filterStr.includes("invert(60%)")) {
+            svg.style.color = "#9ca3af";
+            svg.style.filter = "none";
+          } else if (filterStr.includes("invert(100%)")) {
+            svg.style.color = "#ffffff";
+            svg.style.filter = "none";
+          } else if (filterStr.includes("brightness(0)")) {
+            svg.style.color = "#000000";
+            svg.style.filter = "none";
+          }
+          
+          // Fallback inheritance for paths without explicit fill/stroke
+          svg.style.fill = "currentColor";
+
+          // Force all internal paths to inherit this color
+          const elements = svg.querySelectorAll("*");
+          elements.forEach(p => {
+            const fill = p.getAttribute("fill");
+            if (fill && fill !== "none" && fill !== "transparent" && fill !== "#fff" && fill !== "#ffffff") {
+              p.setAttribute("fill", "currentColor");
+            } else if (!fill && p.tagName.toLowerCase() === "path" && !p.getAttribute("stroke")) {
+              p.setAttribute("fill", "currentColor");
+            }
+            
+            const stroke = p.getAttribute("stroke");
+            if (stroke && stroke !== "none" && stroke !== "transparent") {
+              p.setAttribute("stroke", "currentColor");
+            }
+            // Also check styles
+            if ((p as HTMLElement).style) {
+              if ((p as HTMLElement).style.fill && (p as HTMLElement).style.fill !== "none") (p as HTMLElement).style.fill = "currentColor";
+              if ((p as HTMLElement).style.stroke && (p as HTMLElement).style.stroke !== "none") (p as HTMLElement).style.stroke = "currentColor";
+            }
+          });
+
+          img.parentNode?.replaceChild(svg, img);
+        }
+      } catch (e) {
+        console.error("Failed to inline SVG image", e);
+      }
+    })
+  );
+
+  // 2. Convert all <svg> (both original and newly inlined) into safe base64 <img> tags
+  const svgs = Array.from(host.querySelectorAll("svg"));
+  await Promise.all(
+    svgs.map((svg) => {
+      return new Promise<void>((resolve) => {
+        const clone = svg.cloneNode(true) as SVGSVGElement;
+
+        // Ensure xmlns is present
+        if (!clone.getAttribute("xmlns")) {
+          clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        }
+
+        // Inline currentColor by replacing it with the computed color
+        const computedStyle = window.getComputedStyle(svg);
+        const color = computedStyle.color || "#000000";
+
+        let svgStr = new XMLSerializer().serializeToString(clone);
+        svgStr = svgStr.replace(/currentColor/gi, color);
+
+        const img = document.createElement("img");
+
+        // Preserve classes and styles
+        if (svg.getAttribute("class")) {
+          img.className = svg.getAttribute("class") || "";
+        }
+        img.style.cssText = svg.style.cssText;
+        // Strip filter from the final image just in case html2canvas freaks out
+        img.style.filter = "none";
+
+        // Ensure explicit dimensions for html2canvas
+        const rect = svg.getBoundingClientRect();
+        const width = rect.width || svg.clientWidth || svg.getAttribute("width") || "24";
+        const height = rect.height || svg.clientHeight || svg.getAttribute("height") || "24";
+
+        img.style.width = width + (typeof width === "string" && width.endsWith("%") ? "" : "px");
+        img.style.height = height + (typeof height === "string" && height.endsWith("%") ? "" : "px");
+
+        img.onload = () => {
+          svg.parentNode?.replaceChild(img, svg);
+          resolve();
+        };
+        img.onerror = () => {
+          resolve();
+        };
+
+        img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStr);
+      });
+    })
+  );
+}
+
 function cleanup(host: HTMLDivElement) {
   try {
     (host as any).__root?.unmount();
-  } catch {}
+  } catch { }
   host.remove();
 }
 
@@ -196,6 +309,7 @@ export async function exportCartPdf(
           ),
         ),
       );
+      await convertSvgsToImages(host);
       const canvas = await snap(host.firstElementChild as HTMLElement);
       cleanup(host);
       if (i > 0) pdf.addPage();
@@ -300,6 +414,7 @@ export async function exportCartPdf(
         ),
       ),
     );
+    await convertSvgsToImages(host);
     const canvas = await snap(host.firstElementChild as HTMLElement);
     cleanup(host);
     const img = canvas.toDataURL("image/png");
@@ -321,5 +436,5 @@ export async function exportCartPdf(
     }
   }
 
-  pdf.save(`kiosk-order-${Date.now()}.pdf`);
+  pdf.save(`Y5Home-${Date.now()}.pdf`);
 }

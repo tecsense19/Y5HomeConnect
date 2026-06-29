@@ -1266,9 +1266,9 @@ export function PanelFrame({
                   height: squareSize,
                   borderRadius: 3 * scale,
                   overflow: "hidden",
-                  borderColor: (!iconId && !item.overlay)
+                  borderColor: isPreview
                     ? (isWhite ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.25)')
-                    : (isPreview ? 'var(--slot-border)' : undefined),
+                    : (!iconId && !item.overlay ? (isWhite ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.25)') : undefined),
                 }}
                 className={cn(
                   "flex items-center justify-center border transition relative shrink-0",
