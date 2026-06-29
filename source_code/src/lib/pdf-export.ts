@@ -72,7 +72,11 @@ async function convertSvgsToImages(host: HTMLElement) {
     imgs.map(async (img) => {
       if (!img.src || !img.src.toLowerCase().includes(".svg")) return;
       try {
-        const res = await fetch(img.src);
+        // Append a timestamp to the URL to bypass Cloudflare's cached CORS headers
+        const fetchUrl = new URL(img.src);
+        fetchUrl.searchParams.append("nocache", Date.now().toString());
+        
+        const res = await fetch(fetchUrl.toString());
         if (!res.ok) return;
         const text = await res.text();
         const parser = new DOMParser();
